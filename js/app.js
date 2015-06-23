@@ -9,17 +9,10 @@ var Enemy = function(y) {
     this.sprite = 'images/enemy-bug.png';
     this.x = -100;
     this.y = y;
-    var speed = 0;
-
     // Generate a random number within a range
     // citation: http://stackoverflow.com/questions/1527803/generating-random-numbers-in-javascript-in-a-specific-range
 
-    function generateSpeed() {
-        speed = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
-        return speed;
-    }
-    generateSpeed();
-    this.speed = speed;
+    this.speed = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
 }
 
 // Update the enemy's position, required method for game
@@ -28,8 +21,11 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+
+    // move each enemy according to their pre-defined speed variable
     this.x = this.x + (this.speed * dt);
     
+    // If an enemy goes off the canvas, they loop back to the left
     if (this.x > 600) {
         this.x = -300;
     }
@@ -45,21 +41,23 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 
 var playerClass = function() {
-    this.sprite = 'images/char-boy.png';
     this.x = 202;
     this.y = 384;
+    this.score = 0;
 }
+
 playerClass.prototype.update = function() {
     for (evilBug in allEnemies) {
         var yVariable = allEnemies[evilBug].y - this.y;
         var xVariable = allEnemies[evilBug].x - this.x;
         if (yVariable === 8 && xVariable < 50 && xVariable > -50) {
             this.y = 384;
+            this.score = 0;
         }
     }
 }
-playerClass.prototype.render = function() {
-    var playerImage = Resources.get(this.sprite);
+playerClass.prototype.render = function(character) {
+    var playerImage = Resources.get(character);
     ctx.drawImage(playerImage, this.x, this.y);
 }
 playerClass.prototype.handleInput = function(keycode) {
@@ -76,6 +74,7 @@ playerClass.prototype.handleInput = function(keycode) {
             player.y = player.y - 83;
         } else if (player.y <= 52) {
             player.y = 384;
+            player.score = player.score + 1;
         }
     } else if (keycode === 'down') {
         if (player.y < 384) {

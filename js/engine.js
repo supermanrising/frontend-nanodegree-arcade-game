@@ -14,7 +14,7 @@
  * a little simpler to work with.
  */
 
-var Engine = (function(global) {
+var Engine = function (global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
@@ -26,8 +26,101 @@ var Engine = (function(global) {
         lastTime;
 
     canvas.width = 505;
-    canvas.height = 606;
+    canvas.height = 706;
     doc.body.appendChild(canvas);
+
+    var character = 'images/char-boy.png';
+
+    function preGame() {
+        //ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+        var playerOptions = [
+            {
+                image: 'images/char-boy.png',
+                x: 50,
+                y: 150
+            },
+            {
+                image: 'images/char-cat-girl.png',
+                x: 202.5,
+                y: 150
+            },
+            {
+                image: 'images/char-horn-girl.png',
+                x: 360,
+                y: 150
+            },
+            {
+                image: 'images/char-pink-girl.png',
+                x: 115,
+                y: 300
+            },
+            {
+                image: 'images/char-princess-girl.png',
+                x: 290,
+                y: 300
+            }
+        ];
+
+        for (playerCharacter in playerOptions) {
+            ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
+        }
+
+        // Get mouse coordinates over canvas
+        // Citation: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        canvas.addEventListener('mousemove', function(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            console.log(message);
+
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 215 && mousePos.y < 291 ||
+            mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 215 && mousePos.y < 291 ||
+            mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 215 && mousePos.y < 291 ||
+            mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 365 && mousePos.y < 441 ||
+            mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 365 && mousePos.y < 441)
+            {
+                canvas.style.cursor = "pointer";
+            }
+            else {
+                canvas.style.cursor = "default";
+            }
+        }, false);
+
+        // Determine canvas click location
+        // Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
+
+        canvas.addEventListener("click", onCanvasClick, false);
+        function onCanvasClick(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            console.log(mousePos.x + ', ' + mousePos.y);
+
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 215 && mousePos.y < 291) {
+                character = 'images/char-boy.png';
+                initGame();
+            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 215 && mousePos.y < 291) {
+                character = 'images/char-cat-girl.png';
+                initGame();
+            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 215 && mousePos.y < 291) {
+                character = 'images/char-horn-girl.png';
+                initGame();
+            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 365 && mousePos.y < 441) {
+                character = 'images/char-pink-girl.png';
+                initGame();
+            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 365 && mousePos.y < 441) {
+                character = 'images/char-princess-girl.png';
+                initGame();
+            }
+        }
+    }
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -47,6 +140,7 @@ var Engine = (function(global) {
          */
         update(dt);
         render();
+        
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -57,13 +151,19 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
-    };
+    }
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
      * game loop.
      */
     function init() {
+        //reset();
+        //lastTime = Date.now();
+        preGame();
+    }
+
+    function initGame() {
         reset();
         lastTime = Date.now();
         main();
@@ -81,6 +181,14 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         // checkCollisions();
+        updateScore(player.score);
+    }
+
+    function updateScore(score) {
+        ctx.clearRect(0, 602, 250, 30);
+        ctx.font = "16pt VT323";
+        ctx.fillStyle = "#000000";
+        ctx.fillText("SCORE: " + score, 0, 620);
     }
 
     /* This is called by the update function  and loops through all of the
@@ -98,7 +206,6 @@ var Engine = (function(global) {
         player.update();
     }
     
-
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -154,7 +261,7 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        player.render();
+        player.render(character);
     }
 
     /* This function does nothing but it could have been a good place to
@@ -162,7 +269,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -174,7 +281,11 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 
@@ -183,4 +294,4 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-})(this);
+}(this);

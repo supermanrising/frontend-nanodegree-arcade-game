@@ -1,5 +1,5 @@
 // Enemies our player must avoid
-var Enemy = function() {
+var Enemy = function(y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
@@ -8,6 +8,7 @@ var Enemy = function() {
 
     this.sprite = 'images/enemy-bug.png';
     this.x = -100;
+    this.y = y;
     var speed = 0;
 
     // Generate a random number within a range
@@ -19,20 +20,6 @@ var Enemy = function() {
     }
     generateSpeed();
     this.speed = speed;
-
-    function randomY() {
-       var randomNumber = Math.floor(Math.random() * (3 - 1 + 1)) + 1;
-        if (randomNumber === 1) {
-            yCoor = 60;
-        } else if (randomNumber === 2) {
-            yCoor = 143;
-        } else if (randomNumber === 3) {
-            yCoor = 226;
-        }
-        return yCoor;
-    }
-    randomY();
-    this.y = yCoor;
 }
 
 // Update the enemy's position, required method for game
@@ -104,50 +91,49 @@ playerClass.prototype.handleInput = function(keycode) {
 var allEnemies = [];
 
 function createEnemyOne () {
-    var enemyOne = new Enemy;
+    var enemyOne = new Enemy(60);
     allEnemies.push(enemyOne);
 }
-
 function createEnemyTwo () {
-    var enemyTwo = new Enemy;
+    var enemyTwo = new Enemy(60);
     allEnemies.push(enemyTwo);
 }
 function createEnemyThree () {
-    var enemyThree = new Enemy;
+    var enemyThree = new Enemy(143);
     allEnemies.push(enemyThree);
 }
 function createEnemyFour () {
-    var enemyFour = new Enemy;
+    var enemyFour = new Enemy(143);
     allEnemies.push(enemyFour);
 }
 function createEnemyFive () {
-    var enemyFive = new Enemy;
+    var enemyFive = new Enemy(226);
     allEnemies.push(enemyFive);
 }
 function createEnemySix () {
-    var enemySix = new Enemy;
+    var enemySix = new Enemy(226);
     allEnemies.push(enemySix);
 }
 
-var enemyOneDelay = Math.floor(Math.random() * (4000 - 100 + 1)) + 100;
+var enemyOneDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
 setTimeout (createEnemyOne, enemyOneDelay);
 
-var enemyTwoDelay = Math.floor(Math.random() * (4000 - 100 + 1)) + 100;
+var enemyTwoDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
 setTimeout (createEnemyTwo, enemyTwoDelay);
 
-var enemyThreeDelay = Math.floor(Math.random() * (4000 - 100 + 1)) + 100;
+var enemyThreeDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
 setTimeout (createEnemyThree, enemyThreeDelay);
 
-var enemyFourDelay = Math.floor(Math.random() * (4000 - 100 + 1)) + 100;
+var enemyFourDelay = Math.floor(Math.random() * (6000 - 4000 + 1)) + 3000;
 setTimeout (createEnemyFour, enemyFourDelay);
 
-var enemyFiveDelay = Math.floor(Math.random() * (4000 - 100 + 1)) + 100;
+var enemyFiveDelay = Math.floor(Math.random() * (6000 - 4000 + 1)) + 3000;
 setTimeout (createEnemyFive, enemyFiveDelay);
 
-var enemySixDelay = Math.floor(Math.random() * (4000 - 100 + 1)) + 100;
+var enemySixDelay = Math.floor(Math.random() * (6000 - 4000 + 1)) + 3000;
 setTimeout (createEnemySix, enemySixDelay);
 
-var player = new playerClass;
+var player = new playerClass();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

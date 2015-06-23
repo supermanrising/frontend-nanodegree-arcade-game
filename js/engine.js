@@ -31,34 +31,44 @@ var Engine = function (global) {
 
     var character = 'images/char-boy.png';
 
+    ctx.font = "16pt VT323";
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "left";
+    ctx.save();
+
     function preGame() {
-        //ctx.strokeRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
+        ctx.drawImage(Resources.get('images/title.png'), 5, 130);
+
+        ctx.textAlign = "center";
+        ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 250);
+        ctx.restore();
 
         var playerOptions = [
             {
                 image: 'images/char-boy.png',
                 x: 50,
-                y: 150
+                y: 260
             },
             {
                 image: 'images/char-cat-girl.png',
                 x: 202.5,
-                y: 150
+                y: 260
             },
             {
                 image: 'images/char-horn-girl.png',
                 x: 360,
-                y: 150
+                y: 260
             },
             {
                 image: 'images/char-pink-girl.png',
                 x: 115,
-                y: 300
+                y: 360
             },
             {
                 image: 'images/char-princess-girl.png',
                 x: 290,
-                y: 300
+                y: 360
             }
         ];
 
@@ -82,11 +92,11 @@ var Engine = function (global) {
             var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
             console.log(message);
 
-            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 215 && mousePos.y < 291 ||
-            mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 215 && mousePos.y < 291 ||
-            mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 215 && mousePos.y < 291 ||
-            mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 365 && mousePos.y < 441 ||
-            mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 365 && mousePos.y < 441)
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 325 && mousePos.y < 401 ||
+            mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 325 && mousePos.y < 401 ||
+            mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 325 && mousePos.y < 401 ||
+            mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 425 && mousePos.y < 501 ||
+            mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 425 && mousePos.y < 501)
             {
                 canvas.style.cursor = "pointer";
             }
@@ -103,19 +113,19 @@ var Engine = function (global) {
             var mousePos = getMousePos(canvas, evt);
             console.log(mousePos.x + ', ' + mousePos.y);
 
-            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 215 && mousePos.y < 291) {
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 325 && mousePos.y < 401) {
                 character = 'images/char-boy.png';
                 initGame();
-            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 215 && mousePos.y < 291) {
+            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 325 && mousePos.y < 401) {
                 character = 'images/char-cat-girl.png';
                 initGame();
-            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 215 && mousePos.y < 291) {
+            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 325 && mousePos.y < 401) {
                 character = 'images/char-horn-girl.png';
                 initGame();
-            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 365 && mousePos.y < 441) {
+            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 425 && mousePos.y < 501) {
                 character = 'images/char-pink-girl.png';
                 initGame();
-            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 365 && mousePos.y < 441) {
+            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 425 && mousePos.y < 501) {
                 character = 'images/char-princess-girl.png';
                 initGame();
             }
@@ -186,8 +196,6 @@ var Engine = function (global) {
 
     function updateScore(score) {
         ctx.clearRect(0, 602, 250, 30);
-        ctx.font = "16pt VT323";
-        ctx.fillStyle = "#000000";
         ctx.fillText("SCORE: " + score, 0, 620);
     }
 
@@ -285,7 +293,9 @@ var Engine = function (global) {
         'images/char-cat-girl.png',
         'images/char-horn-girl.png',
         'images/char-pink-girl.png',
-        'images/char-princess-girl.png'
+        'images/char-princess-girl.png',
+        'images/pregame-bg.png',
+        'images/title.png'
     ]);
     Resources.onReady(init);
 

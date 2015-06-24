@@ -37,6 +37,22 @@ Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+var Heart = function(y) {
+    this.sprite = 'images/Heart.png';
+    this.x = -100;
+    this.y = y;
+    this.speed = Math.floor(Math.random() * (200 - 100 + 1)) + 100;
+}
+Heart.prototype.update = function(dt) {
+    this.x = this.x + (this.speed * dt);
+    if (this.x > 3000) {
+        this.x = -300;
+    }
+}
+Heart.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -51,14 +67,26 @@ playerClass.prototype.update = function() {
     for (evilBug in allEnemies) {
         var yVariable = allEnemies[evilBug].y - this.y;
         var xVariable = allEnemies[evilBug].x - this.x;
+
         if (yVariable === 8 && xVariable < 50 && xVariable > -50) {
             this.y = 384;
-            if (this.hearts > 1) {
+            this.x = 202;
+            if (this.hearts > 0) {
                 this.hearts = this.hearts - 1;
-            } else {
-                this.hearts = 3;
-                this.score = 0;
-            }
+            } 
+        }
+    }
+
+    for (heart in allHearts) {
+        var yHeartVar = allHearts[heart].y - this.y;
+        var xHeartVar = allHearts[heart].x - this.x;
+
+        //console.log(xHeartVar + ', ' + yHeartVar);
+
+        if (yHeartVar === 28 && xHeartVar < 50 && xHeartVar > -50) {
+            this.hearts = this.hearts + 1;
+            // Move heart outside canvas after it's been used
+            allHearts[heart].y = 1000;
         }
     }
 }
@@ -80,6 +108,7 @@ playerClass.prototype.handleInput = function(keycode) {
             player.y = player.y - 83;
         } else if (player.y <= 52) {
             player.y = 384;
+            player.x = 202;
             player.score = player.score + 1;
         }
     } else if (keycode === 'down') {
@@ -137,6 +166,30 @@ setTimeout (createEnemyFive, enemyFiveDelay);
 
 var enemySixDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
 setTimeout (createEnemySix, enemySixDelay);
+
+var allHearts = [];
+
+function createHeartOne () {
+    var heartOne = new Heart(80);
+    allHearts.push(heartOne);
+}
+function createHeartTwo () {
+    var heartTwo = new Heart(163);
+    allHearts.push(heartTwo);
+}
+function createHeartThree () {
+    var heartThree = new Heart(246);
+    allHearts.push(heartThree);
+}
+
+var heartOneDelay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+setTimeout (createHeartOne, heartOneDelay);
+
+var heartTwoDelay = Math.floor(Math.random() * (25000 - 15000 + 1)) + 15000;
+setTimeout (createHeartTwo, heartTwoDelay);
+
+var heartThreeDelay = Math.floor(Math.random() * (35000 - 25000 + 1)) + 25000;
+setTimeout (createHeartThree, heartThreeDelay);
 
 var player = new playerClass();
 

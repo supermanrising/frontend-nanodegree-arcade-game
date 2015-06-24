@@ -66,6 +66,7 @@ var Engine = function (global) {
         ctx.font = "18pt VT323";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
+        ctx.save();
         reset();
 
         // Get mouse coordinates over canvas
@@ -154,6 +155,16 @@ var Engine = function (global) {
         }
     }
 
+    function gameOver(playerScore) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
+        ctx.font = "60pt VT323";
+        ctx.textAlign = "center";
+        ctx.fillText('GAME OVER', canvas.width / 2, 220);
+        ctx.restore();
+        ctx.fillText('Your Score: ' + playerScore, canvas.width / 2, 290);
+    }
+
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -182,7 +193,11 @@ var Engine = function (global) {
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+        if (player.hearts > 0) {
+            win.requestAnimationFrame(main);
+        } else {
+            gameOver(player.score);
+        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -257,6 +272,9 @@ var Engine = function (global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        allHearts.forEach(function(heart) {
+            heart.update(dt);
+        });
         player.update();
     }
     
@@ -314,6 +332,9 @@ var Engine = function (global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        allHearts.forEach(function(heart) {
+            heart.render();
+        });
 
         player.render(character);
     }
@@ -335,7 +356,8 @@ var Engine = function (global) {
         'images/pregame-bg.png',
         'images/title.png',
         'images/Star.png',
-        'images/heart-small.png'
+        'images/heart-small.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 

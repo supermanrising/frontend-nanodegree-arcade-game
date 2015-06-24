@@ -11,8 +11,7 @@ var Enemy = function(y) {
     this.y = y;
     // Generate a random number within a range
     // citation: http://stackoverflow.com/questions/1527803/generating-random-numbers-in-javascript-in-a-specific-range
-
-    this.speed = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
+    this.speed = Math.floor(Math.random() * (500 - 150 + 1)) + 150;
 }
 
 // Update the enemy's position, required method for game
@@ -22,11 +21,13 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
 
+    
     // move each enemy according to their pre-defined speed variable
     this.x = this.x + (this.speed * dt);
     
-    // If an enemy goes off the canvas, they loop back to the left
+    // If an enemy goes off canvas, recalculate speed and loop back to the left
     if (this.x > 600) {
+        this.speed = Math.floor(Math.random() * (500 - 150 + 1)) + 150;
         this.x = -300;
     }
 }
@@ -44,15 +45,20 @@ var playerClass = function() {
     this.x = 202;
     this.y = 384;
     this.score = 0;
+    this.hearts = 3;
 }
-
 playerClass.prototype.update = function() {
     for (evilBug in allEnemies) {
         var yVariable = allEnemies[evilBug].y - this.y;
         var xVariable = allEnemies[evilBug].x - this.x;
         if (yVariable === 8 && xVariable < 50 && xVariable > -50) {
             this.y = 384;
-            this.score = 0;
+            if (this.hearts > 1) {
+                this.hearts = this.hearts - 1;
+            } else {
+                this.hearts = 3;
+                this.score = 0;
+            }
         }
     }
 }
@@ -117,19 +123,19 @@ function createEnemySix () {
 var enemyOneDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
 setTimeout (createEnemyOne, enemyOneDelay);
 
-var enemyTwoDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
+var enemyTwoDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
 setTimeout (createEnemyTwo, enemyTwoDelay);
 
 var enemyThreeDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
 setTimeout (createEnemyThree, enemyThreeDelay);
 
-var enemyFourDelay = Math.floor(Math.random() * (6000 - 4000 + 1)) + 3000;
+var enemyFourDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
 setTimeout (createEnemyFour, enemyFourDelay);
 
-var enemyFiveDelay = Math.floor(Math.random() * (6000 - 4000 + 1)) + 3000;
+var enemyFiveDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
 setTimeout (createEnemyFive, enemyFiveDelay);
 
-var enemySixDelay = Math.floor(Math.random() * (6000 - 4000 + 1)) + 3000;
+var enemySixDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
 setTimeout (createEnemySix, enemySixDelay);
 
 var player = new playerClass();

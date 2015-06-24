@@ -29,52 +29,44 @@ var Engine = function (global) {
     canvas.height = 706;
     doc.body.appendChild(canvas);
 
-    var character = 'images/char-boy.png';
+    // Create initial character variable
+    var character;
 
-    ctx.font = "16pt VT323";
-    ctx.fillStyle = "#000000";
-    ctx.textAlign = "left";
-    ctx.save();
+    // Set array of available player choices
+    var playerOptions = [
+        {
+            image: 'images/char-boy.png',
+            x: 50,
+            y: 210
+        },
+        {
+            image: 'images/char-cat-girl.png',
+            x: 202.5,
+            y: 210
+        },
+        {
+            image: 'images/char-horn-girl.png',
+            x: 360,
+            y: 210
+        },
+        {
+            image: 'images/char-pink-girl.png',
+            x: 115,
+            y: 310
+        },
+        {
+            image: 'images/char-princess-girl.png',
+            x: 290,
+            y: 310
+        }
+    ];
 
     function preGame() {
-        ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
-        ctx.drawImage(Resources.get('images/title.png'), 5, 130);
-
+        // Set font style
+        ctx.font = "18pt VT323";
+        ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
-        ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 250);
-        ctx.restore();
-
-        var playerOptions = [
-            {
-                image: 'images/char-boy.png',
-                x: 50,
-                y: 260
-            },
-            {
-                image: 'images/char-cat-girl.png',
-                x: 202.5,
-                y: 260
-            },
-            {
-                image: 'images/char-horn-girl.png',
-                x: 360,
-                y: 260
-            },
-            {
-                image: 'images/char-pink-girl.png',
-                x: 115,
-                y: 360
-            },
-            {
-                image: 'images/char-princess-girl.png',
-                x: 290,
-                y: 360
-            }
-        ];
-
-        for (playerCharacter in playerOptions) {
-            ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
-        }
+        reset();
 
         // Get mouse coordinates over canvas
         // Citation: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
@@ -89,14 +81,15 @@ var Engine = function (global) {
 
         canvas.addEventListener('mousemove', function(evt) {
             var mousePos = getMousePos(canvas, evt);
-            var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-            console.log(message);
+            //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            //console.log(message);
 
-            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 325 && mousePos.y < 401 ||
-            mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 325 && mousePos.y < 401 ||
-            mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 325 && mousePos.y < 401 ||
-            mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 425 && mousePos.y < 501 ||
-            mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 425 && mousePos.y < 501)
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351 ||
+            mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351 ||
+            mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351 ||
+            mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451 ||
+            mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451 ||
+            mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498  && character != null)
             {
                 canvas.style.cursor = "pointer";
             }
@@ -111,24 +104,53 @@ var Engine = function (global) {
         canvas.addEventListener("click", onCanvasClick, false);
         function onCanvasClick(evt) {
             var mousePos = getMousePos(canvas, evt);
-            console.log(mousePos.x + ', ' + mousePos.y);
+            //console.log(mousePos.x + ', ' + mousePos.y);
 
-            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 325 && mousePos.y < 401) {
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) {
                 character = 'images/char-boy.png';
-                initGame();
-            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 325 && mousePos.y < 401) {
+                reset();
+            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351) {
                 character = 'images/char-cat-girl.png';
-                initGame();
-            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 325 && mousePos.y < 401) {
+                reset();
+            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351) {
                 character = 'images/char-horn-girl.png';
-                initGame();
-            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 425 && mousePos.y < 501) {
+                reset();
+            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451) {
                 character = 'images/char-pink-girl.png';
-                initGame();
-            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 425 && mousePos.y < 501) {
+                reset();
+            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
                 character = 'images/char-princess-girl.png';
+                reset();
+            } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
                 initGame();
             }
+        }
+    }
+
+    function reset() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
+        ctx.drawImage(Resources.get('images/title.png'), 5, 100);
+        ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 220);
+
+        if (character === 'images/char-boy.png') {
+            ctx.drawImage(Resources.get('images/Star.png'), 51, 237);
+            ctx.fillText('Start Game', canvas.width / 2, 495);
+        } else if (character === 'images/char-cat-girl.png') {
+            ctx.drawImage(Resources.get('images/Star.png'), 203.5, 237);
+            ctx.fillText('Start Game', canvas.width / 2, 495);
+        } else if (character === 'images/char-horn-girl.png') {
+            ctx.drawImage(Resources.get('images/Star.png'), 361, 237);
+            ctx.fillText('Start Game', canvas.width / 2, 495);
+        } else if (character === 'images/char-pink-girl.png') {
+            ctx.drawImage(Resources.get('images/Star.png'), 116, 337);
+            ctx.fillText('Start Game', canvas.width / 2, 495);
+        } else if (character === 'images/char-princess-girl.png') {
+            ctx.drawImage(Resources.get('images/Star.png'), 291, 337);
+            ctx.fillText('Start Game', canvas.width / 2, 495);
+        }
+        for (playerCharacter in playerOptions) {
+            ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
         }
     }
 
@@ -174,7 +196,7 @@ var Engine = function (global) {
     }
 
     function initGame() {
-        reset();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         lastTime = Date.now();
         main();
     }
@@ -192,11 +214,35 @@ var Engine = function (global) {
         updateEntities(dt);
         // checkCollisions();
         updateScore(player.score);
+        updateHearts(player.hearts);
     }
 
     function updateScore(score) {
         ctx.clearRect(0, 602, 250, 30);
+        ctx.textAlign = "left";
         ctx.fillText("SCORE: " + score, 0, 620);
+    }
+
+    function updateHearts(hearts) {
+        ctx.clearRect(canvas.width - 250, 602, 250, 30);
+        if (player.hearts > 0) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 20, 602);
+        }
+        if (player.hearts > 1) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 45, 602);
+        }
+        if (player.hearts > 2) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 70, 602);
+        }
+        if (player.hearts > 3) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 95, 602);
+        }
+        if (player.hearts > 4) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 120, 602);
+        }
+        if (player.hearts > 5) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 145, 602);
+        }
     }
 
     /* This is called by the update function  and loops through all of the
@@ -272,14 +318,6 @@ var Engine = function (global) {
         player.render(character);
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-    function reset() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
@@ -295,7 +333,9 @@ var Engine = function (global) {
         'images/char-pink-girl.png',
         'images/char-princess-girl.png',
         'images/pregame-bg.png',
-        'images/title.png'
+        'images/title.png',
+        'images/Star.png',
+        'images/heart-small.png'
     ]);
     Resources.onReady(init);
 

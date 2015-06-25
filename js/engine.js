@@ -61,6 +61,45 @@ var Engine = function (global) {
         }
     ];
 
+    // Get mouse coordinates over canvas
+        // Citation: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+
+    function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
+    // Add event listener for pregame
+    // This determines the user's character choice
+    // Defined outside the preGame() scope so it can be removed when the game is initialized
+    canvas.addEventListener("click", onCanvasClick, false);
+    function onCanvasClick(evt) {
+        var mousePos = getMousePos(canvas, evt);
+        //console.log(mousePos.x + ', ' + mousePos.y);
+
+        if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) {
+            character = 'images/char-boy.png';
+            reset();
+        } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351) {
+            character = 'images/char-cat-girl.png';
+            reset();
+        } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351) {
+            character = 'images/char-horn-girl.png';
+            reset();
+        } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451) {
+            character = 'images/char-pink-girl.png';
+            reset();
+        } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
+            character = 'images/char-princess-girl.png';
+            reset();
+        } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
+            initGame();
+        }
+    }
+
     function preGame() {
         // Set font style
         ctx.font = "18pt VT323";
@@ -68,17 +107,6 @@ var Engine = function (global) {
         ctx.textAlign = "center";
         ctx.save();
         reset();
-
-        // Get mouse coordinates over canvas
-        // Citation: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
-
-        function getMousePos(canvas, evt) {
-            var rect = canvas.getBoundingClientRect();
-            return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-            };
-        }
 
         canvas.addEventListener('mousemove', function(evt) {
             var mousePos = getMousePos(canvas, evt);
@@ -102,30 +130,8 @@ var Engine = function (global) {
         // Determine canvas click location
         // Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
 
-        canvas.addEventListener("click", onCanvasClick, false);
-        function onCanvasClick(evt) {
-            var mousePos = getMousePos(canvas, evt);
-            //console.log(mousePos.x + ', ' + mousePos.y);
-
-            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) {
-                character = 'images/char-boy.png';
-                reset();
-            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351) {
-                character = 'images/char-cat-girl.png';
-                reset();
-            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351) {
-                character = 'images/char-horn-girl.png';
-                reset();
-            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451) {
-                character = 'images/char-pink-girl.png';
-                reset();
-            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
-                character = 'images/char-princess-girl.png';
-                reset();
-            } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
-                initGame();
-            }
-        }
+        
+        
     }
 
     function reset() {
@@ -163,6 +169,10 @@ var Engine = function (global) {
         ctx.fillText('GAME OVER', canvas.width / 2, 220);
         ctx.restore();
         ctx.fillText('Your Score: ' + playerScore, canvas.width / 2, 290);
+        ctx.textAlign = "left";
+        ctx.fillText('PLAY AGAIN', 40, 350);
+        ctx.textAlign = "right";
+        ctx.fillText('CHOOSE NEW CHARACTER', canvas.width - 40, 350);
     }
 
     /* This function serves as the kickoff point for the game loop itself
@@ -212,11 +222,24 @@ var Engine = function (global) {
 
     function initGame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Remove hover-able elements
+        canvas.addEventListener('mousemove', function(evt) {
+            var mousePos = getMousePos(canvas, evt);
+
+            if (mousePos.x != null && mousePos.y != null) {
+                canvas.style.cursor = "default";
+            }
+        }, false);
+
+        // Remove clickable elements inside canvas
+        canvas.removeEventListener("click", onCanvasClick, false);
+        
+
         lastTime = Date.now();
 
         // Add enemies to allEnemies array
         createEnemies();
-
         // Add hearts to allHearts array
         createHearts();
 

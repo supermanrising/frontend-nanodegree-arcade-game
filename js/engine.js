@@ -72,46 +72,60 @@ var Engine = function (global) {
         };
     }
 
-    // Add event listener for pregame
-    // This determines the user's character choice
-    // Defined outside the preGame() scope so it can be removed when the game is initialized
-    canvas.addEventListener("click", onCanvasClick, false);
-    function onCanvasClick(evt) {
-        var mousePos = getMousePos(canvas, evt);
-        //console.log(mousePos.x + ', ' + mousePos.y);
-
-        if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) {
-            character = 'images/char-boy.png';
-            reset();
-        } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351) {
-            character = 'images/char-cat-girl.png';
-            reset();
-        } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351) {
-            character = 'images/char-horn-girl.png';
-            reset();
-        } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451) {
-            character = 'images/char-pink-girl.png';
-            reset();
-        } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
-            character = 'images/char-princess-girl.png';
-            reset();
-        } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
-            initGame();
-        }
-    }
-
     function preGame() {
+
+        reset();
+
         // Set font style
         ctx.font = "18pt VT323";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
         ctx.save();
-        reset();
 
-        canvas.addEventListener('mousemove', function(evt) {
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
+        ctx.drawImage(Resources.get('images/title.png'), 5, 100);
+        ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 220);
+
+        for (playerCharacter in playerOptions) {
+            ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
+        }
+
+        if (character === 'images/char-boy.png') {
+            selectCharacter(character, 51, 237);
+        } else if (character === 'images/char-cat-girl.png') {
+            selectCharacter(character, 203.5, 237);
+        } else if (character === 'images/char-horn-girl.png') {
+            selectCharacter(character, 361, 237);
+        } else if (character === 'images/char-pink-girl.png') {
+            selectCharacter(character, 116, 337);
+        } else if (character === 'images/char-princess-girl.png') {
+            selectCharacter(character, 291, 337);
+        }
+
+        function selectCharacter (selectedCharacter, x, y) {
+            character = selectedCharacter
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
+            ctx.drawImage(Resources.get('images/title.png'), 5, 100);
+            ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 220);
+
+            ctx.drawImage(Resources.get('images/Star.png'), x, y);
+
+            for (playerCharacter in playerOptions) {
+                ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
+            }
+            ctx.fillText('Start Game', canvas.width / 2, 495);
+        }
+
+        canvas.addEventListener('mousemove', preGameMouseLocation, false);
+
+        function preGameMouseLocation(evt) {
             var mousePos = getMousePos(canvas, evt);
-            //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-            //console.log(message);
+            var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            console.log(message);
 
             if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351 ||
             mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351 ||
@@ -125,40 +139,41 @@ var Engine = function (global) {
             else {
                 canvas.style.cursor = "default";
             }
-        }, false);
+        }
 
         // Determine canvas click location
         // Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
+        canvas.addEventListener('click', onPreGameClick, false);
+        function onPreGameClick(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            //console.log(mousePos.x + ', ' + mousePos.y);
 
-        
-        
+            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) {
+                selectCharacter('images/char-boy.png', 51, 237);
+            } else if (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351) {
+                selectCharacter('images/char-cat-girl.png', 203.5, 237);
+            } else if (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351) {
+                selectCharacter('images/char-horn-girl.png', 361, 237);
+            } else if (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451) {
+                selectCharacter('images/char-pink-girl.png', 116, 337);
+            } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
+                selectCharacter('images/char-princess-girl.png', 291, 337);
+            } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
+                initGame();
+                canvas.removeEventListener('mousemove', preGameMouseLocation, false);
+                canvas.removeEventListener('click', onPreGameClick, false);
+                canvas.style.cursor = "default";
+            }
+        }    
     }
 
     function reset() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
-        ctx.drawImage(Resources.get('images/title.png'), 5, 100);
-        ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 220);
-
-        if (character === 'images/char-boy.png') {
-            ctx.drawImage(Resources.get('images/Star.png'), 51, 237);
-            ctx.fillText('Start Game', canvas.width / 2, 495);
-        } else if (character === 'images/char-cat-girl.png') {
-            ctx.drawImage(Resources.get('images/Star.png'), 203.5, 237);
-            ctx.fillText('Start Game', canvas.width / 2, 495);
-        } else if (character === 'images/char-horn-girl.png') {
-            ctx.drawImage(Resources.get('images/Star.png'), 361, 237);
-            ctx.fillText('Start Game', canvas.width / 2, 495);
-        } else if (character === 'images/char-pink-girl.png') {
-            ctx.drawImage(Resources.get('images/Star.png'), 116, 337);
-            ctx.fillText('Start Game', canvas.width / 2, 495);
-        } else if (character === 'images/char-princess-girl.png') {
-            ctx.drawImage(Resources.get('images/Star.png'), 291, 337);
-            ctx.fillText('Start Game', canvas.width / 2, 495);
-        }
-        for (playerCharacter in playerOptions) {
-            ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
-        }
+        // Set player's score and hearts back to zero
+        player.hearts = 3;
+        player.score = 0;
+        // Empty the allEnemies and allHearts arrays
+        allEnemies.length = 0;
+        allHearts.length = 0;
     }
 
     function gameOver(playerScore) {
@@ -169,10 +184,45 @@ var Engine = function (global) {
         ctx.fillText('GAME OVER', canvas.width / 2, 220);
         ctx.restore();
         ctx.fillText('Your Score: ' + playerScore, canvas.width / 2, 290);
-        ctx.textAlign = "left";
-        ctx.fillText('PLAY AGAIN', 40, 350);
-        ctx.textAlign = "right";
-        ctx.fillText('CHOOSE NEW CHARACTER', canvas.width - 40, 350);
+        ctx.fillText('PLAY AGAIN', 140, 370);
+        ctx.fillText('NEW CHARACTER', canvas.width - 140, 370);
+
+        canvas.addEventListener('mousemove', gameOverMouseLocation, false);
+
+        function gameOverMouseLocation(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            //console.log(message);
+
+            if (mousePos.x > 93.5 && mousePos.x < 191.5 && mousePos.y > 357 && mousePos.y < 373 ||
+            mousePos.x > 302.5 && mousePos.x < 431.5 && mousePos.y > 357 && mousePos.y < 373)
+            {
+                canvas.style.cursor = "pointer";
+            }
+            else {
+                canvas.style.cursor = "default";
+            }
+        }
+
+        canvas.addEventListener("click", onGameOverClick, false);
+        function onGameOverClick(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            //console.log(mousePos.x + ', ' + mousePos.y);
+
+            if (mousePos.x > 93.5 && mousePos.x < 191.5 && mousePos.y > 357 && mousePos.y < 373) {
+                canvas.removeEventListener('mousemove', gameOverMouseLocation, false);
+                canvas.removeEventListener('click', onGameOverClick, false);
+                canvas.style.cursor = "default";
+                console.log('initialize game, same character');
+                //initGame();
+            } else if (mousePos.x > 302.5 && mousePos.x < 431.5 && mousePos.y > 357 && mousePos.y < 373) {
+                canvas.removeEventListener('mousemove', gameOverMouseLocation, false);
+                canvas.removeEventListener('click', onGameOverClick, false);
+                canvas.style.cursor = "default";
+                console.log('initialize pregame, new character');
+                preGame();
+            }
+        }    
     }
 
     /* This function serves as the kickoff point for the game loop itself
@@ -221,20 +271,9 @@ var Engine = function (global) {
     }
 
     function initGame() {
+        reset();
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Remove hover-able elements
-        canvas.addEventListener('mousemove', function(evt) {
-            var mousePos = getMousePos(canvas, evt);
-
-            if (mousePos.x != null && mousePos.y != null) {
-                canvas.style.cursor = "default";
-            }
-        }, false);
-
-        // Remove clickable elements inside canvas
-        canvas.removeEventListener("click", onCanvasClick, false);
-        
 
         lastTime = Date.now();
 

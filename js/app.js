@@ -124,72 +124,57 @@ playerClass.prototype.handleInput = function(keycode) {
 // Place the player object in a variable called player
 var allEnemies = [];
 
-function createEnemyOne () {
+function createEnemies () {
+
     var enemyOne = new Enemy(60);
-    allEnemies.push(enemyOne);
-}
-function createEnemyTwo () {
+    setTimeout(function() {
+        allEnemies.push(enemyOne);
+    }, Math.floor(Math.random() * (2000 - 100 + 1)) + 100)
+
     var enemyTwo = new Enemy(60);
-    allEnemies.push(enemyTwo);
-}
-function createEnemyThree () {
+    setTimeout(function() {
+        allEnemies.push(enemyTwo);
+    }, Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000)
+
     var enemyThree = new Enemy(143);
-    allEnemies.push(enemyThree);
-}
-function createEnemyFour () {
+    setTimeout(function() {
+        allEnemies.push(enemyThree);
+    }, Math.floor(Math.random() * (2000 - 100 + 1)) + 100)
+
     var enemyFour = new Enemy(143);
-    allEnemies.push(enemyFour);
-}
-function createEnemyFive () {
+    setTimeout(function() {
+        allEnemies.push(enemyFour);
+    }, Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000)
+
     var enemyFive = new Enemy(226);
-    allEnemies.push(enemyFive);
-}
-function createEnemySix () {
+    setTimeout(function() {
+        allEnemies.push(enemyFive);
+    }, Math.floor(Math.random() * (2000 - 100 + 1)) + 100)
+
     var enemySix = new Enemy(226);
-    allEnemies.push(enemySix);
+    setTimeout(function() {
+        allEnemies.push(enemySix);
+    }, Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000)
 }
-
-var enemyOneDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
-setTimeout (createEnemyOne, enemyOneDelay);
-
-var enemyTwoDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
-setTimeout (createEnemyTwo, enemyTwoDelay);
-
-var enemyThreeDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
-setTimeout (createEnemyThree, enemyThreeDelay);
-
-var enemyFourDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
-setTimeout (createEnemyFour, enemyFourDelay);
-
-var enemyFiveDelay = Math.floor(Math.random() * (2500 - 100 + 1)) + 100;
-setTimeout (createEnemyFive, enemyFiveDelay);
-
-var enemySixDelay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
-setTimeout (createEnemySix, enemySixDelay);
 
 var allHearts = [];
 
-function createHeartOne () {
+function createHearts () {
     var heartOne = new Heart(80);
-    allHearts.push(heartOne);
-}
-function createHeartTwo () {
+    setTimeout(function() {
+        allHearts.push(heartOne);
+    }, Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000)
+
     var heartTwo = new Heart(163);
-    allHearts.push(heartTwo);
-}
-function createHeartThree () {
+    setTimeout(function() {
+        allHearts.push(heartTwo);
+    }, Math.floor(Math.random() * (25000 - 15000 + 1)) + 15000)
+
     var heartThree = new Heart(246);
-    allHearts.push(heartThree);
+    setTimeout(function() {
+        allHearts.push(heartThree);
+    }, Math.floor(Math.random() * (35000 - 25000 + 1)) + 25000)
 }
-
-var heartOneDelay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
-setTimeout (createHeartOne, heartOneDelay);
-
-var heartTwoDelay = Math.floor(Math.random() * (25000 - 15000 + 1)) + 15000;
-setTimeout (createHeartTwo, heartTwoDelay);
-
-var heartThreeDelay = Math.floor(Math.random() * (35000 - 25000 + 1)) + 25000;
-setTimeout (createHeartThree, heartThreeDelay);
 
 var player = new playerClass();
 

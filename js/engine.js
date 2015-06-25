@@ -213,6 +213,13 @@ var Engine = function (global) {
     function initGame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         lastTime = Date.now();
+
+        // Add enemies to allEnemies array
+        createEnemies();
+
+        // Add hearts to allHearts array
+        createHearts();
+
         main();
     }
 

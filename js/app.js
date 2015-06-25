@@ -25,11 +25,27 @@ Enemy.prototype.update = function(dt) {
     // move each enemy according to their pre-defined speed variable
     this.x = this.x + (this.speed * dt);
     
-    // If an enemy goes off canvas, recalculate speed and loop back to the left
+    // If an enemy goes off canvas, loop back to the left
+    for (bug in allEnemies) {
+        // To avoid overlapping enemies, check to see if
+        // the other bug on this bug's y coordinate is at
+        // least half way through the screen before
+        // looping this bug
+        if (this != allEnemies[bug] && this.y === allEnemies[bug].y && this.x > 600 && allEnemies[bug].x > 300) {
+            // Re-calculate bug speed
+            this.speed = Math.floor(Math.random() * (500 - 150 + 1)) + 150;
+            // place bug to the left of canvas
+            this.x = -300;
+        }
+    }
+    
+
+    /*
     if (this.x > 600) {
         this.speed = Math.floor(Math.random() * (500 - 150 + 1)) + 150;
         this.x = -300;
     }
+    */
 }
 
 // Draw the enemy on the screen, required method for game

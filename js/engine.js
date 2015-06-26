@@ -8,10 +8,6 @@
  * the screen, it may look like just that image/character is moving or being
  * drawn but that is not the case. What's really happening is the entire "scene"
  * is being drawn over and over, presenting the illusion of animation.
- *
- * This engine is available globally via the Engine variable and it also makes
- * the canvas' context (ctx) object globally available to make writing app.js
- * a little simpler to work with.
  */
 
 var Engine = function (global) {
@@ -29,10 +25,10 @@ var Engine = function (global) {
     canvas.height = 706;
     doc.body.appendChild(canvas);
 
-    // Create initial character variable
+    // Create initial character variable, to be set when the user chooses a character during preGame()
     var character;
 
-    // Set array of available player choices
+    // Set array of available player choices with their x and y coordinates during preGame()
     var playerOptions = [
         {
             image: 'images/char-boy.png',
@@ -61,8 +57,11 @@ var Engine = function (global) {
         }
     ];
 
-    // Get mouse coordinates over canvas
-        // Citation: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+    /* Get mouse coordinates over canvas
+     * Citation: http://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+     * I use this to gather data on mouse position to find out where a user clicked on the
+     * canvas, and well as where they hover to know if the mouse should be a pointer
+     */
 
     function getMousePos(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
@@ -78,18 +77,19 @@ var Engine = function (global) {
         ctx.font = "18pt VT323";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "center";
-        ctx.save();
 
-
+        // clear the canvas and draw the preGame elements
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
         ctx.drawImage(Resources.get('images/title.png'), 5, 100);
         ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 220);
 
+        // Draw each character on the screen
         for (playerCharacter in playerOptions) {
             ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
         }
 
+        // If a character has already been chosen, run the selectCharacter function
         if (character === 'images/char-boy.png') {
             selectCharacter(character, 51, 237);
         } else if (character === 'images/char-cat-girl.png') {
@@ -102,6 +102,10 @@ var Engine = function (global) {
             selectCharacter(character, 291, 337);
         }
 
+        /* This function runs after a character has been selected.  It re-draws preGame
+         * elements, draws a star behind the chosen character, and adds 'Start Game'
+         * text below the characters
+         */
         function selectCharacter (selectedCharacter, x, y) {
             character = selectedCharacter
 
@@ -118,10 +122,14 @@ var Engine = function (global) {
             ctx.fillText('Start Game', canvas.width / 2, 495);
         }
 
+        // Add an event listener to detect mouse movement and send that information to preGameMouseLocation()
         canvas.addEventListener('mousemove', preGameMouseLocation, false);
 
+        // This function determines if the cursor style should be a pointer or not, based on the mouse position.
+        // When the user hovers over characters or 'Start Game', it changes the cursor style
         function preGameMouseLocation(evt) {
             var mousePos = getMousePos(canvas, evt);
+            // Uncomment the next 2 lines to see the users mouse position in the console
             //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
             //console.log(message);
 
@@ -139,11 +147,17 @@ var Engine = function (global) {
             }
         }
 
-        // Determine canvas click location
-        // Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
+        /* Determine canvas click location
+         * Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
+         * Add an event listener to run onPreGameClick() whenever the user clicks.
+         * onPreGameClick() uses the user's mouse location to determine their chosen
+         * character and when to start the game 
+         */
         canvas.addEventListener('click', onPreGameClick, false);
         function onPreGameClick(evt) {
             var mousePos = getMousePos(canvas, evt);
+
+            // Uncomment the following line to see the user's mouse location when they click
             //console.log(mousePos.x + ', ' + mousePos.y);
 
             if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) {
@@ -157,6 +171,7 @@ var Engine = function (global) {
             } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
                 selectCharacter('images/char-princess-girl.png', 291, 337);
             } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
+                // If they have chosen a character and they click start game, initialize the game and remove event listener functions
                 initGame();
                 canvas.removeEventListener('mousemove', preGameMouseLocation, false);
                 canvas.removeEventListener('click', onPreGameClick, false);
@@ -165,6 +180,10 @@ var Engine = function (global) {
         }    
     }
 
+    /* This function resets the players hearts, score, position, empties the object arrays,
+     * clears any timeout functions that have been set inside app.js, and sets halfSpeed
+     * to false.
+     */
     function reset() {
         // Set player's score and hearts back to zero and position back to first block
         player.hearts = 3;
@@ -175,17 +194,24 @@ var Engine = function (global) {
         allEnemies.length = 0;
         allHearts.length = 0;
         allStars.length = 0;
-        // Clear setTimeouts on Hearts and Enemies in case they have not been created yet
-        clearInterval(pushHearts);
-        clearInterval(pushStars);
+        // Clear setTimeouts on Hearts, Stars, and Enemies.
+        clearTimeout(pushHearts);
+        clearTimeout(pushStars);
         clearTimeout(createEnemyOne);
         clearTimeout(createEnemyTwo);
         clearTimeout(createEnemyThree);
         clearTimeout(createEnemyFour);
         clearTimeout(createEnemyFive);
         clearTimeout(createEnemySix);
+        clearTimeout(endStarPower);
+        halfSpeed = false;
     }
 
+    /* This function is called by main() if the player has lost all hearts (line 295).
+     * It clears the canvas, and draws 'Game Over' with the users score information.
+     * It also give the options to play again with the same character or choose a new
+     * character.
+     */
     function gameOver(playerScore) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
@@ -201,6 +227,7 @@ var Engine = function (global) {
         ctx.fillText('PLAY AGAIN', 140, 370);
         ctx.fillText('NEW CHARACTER', canvas.width - 140, 370);
 
+        // We put our mouse movement and mouse click event listeners here as well
         canvas.addEventListener('mousemove', gameOverMouseLocation, false);
 
         function gameOverMouseLocation(evt) {
@@ -208,6 +235,7 @@ var Engine = function (global) {
             //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
             //console.log(message);
 
+            // Determine if the user is hovering on a button, and change cursor to pointer
             if (mousePos.x > 93.5 && mousePos.x < 191.5 && mousePos.y > 357 && mousePos.y < 373 ||
             mousePos.x > 302.5 && mousePos.x < 431.5 && mousePos.y > 357 && mousePos.y < 373)
             {
@@ -218,6 +246,10 @@ var Engine = function (global) {
             }
         }
 
+        /* Determines click location and runs corresponding function.  If the user clicks new game,
+         * we reset() and run the initGame() function again.  If the user clicks new
+         * character, we reset and run the preGame function again.
+         */
         canvas.addEventListener("click", onGameOverClick, false);
         function onGameOverClick(evt) {
             var mousePos = getMousePos(canvas, evt);
@@ -257,7 +289,6 @@ var Engine = function (global) {
          */
         update(dt);
         render();
-        
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -276,55 +307,52 @@ var Engine = function (global) {
         }
     }
 
-    /* This function does some initial setup that should only occur once,
-     * particularly setting the lastTime variable that is required for the
-     * game loop.
+    /* This function is only called once.  It begins the preGame.
      */
     function init() {
-        //reset();
-        //lastTime = Date.now();
         preGame();
     }
 
+    /* This function is called whenever a new game begins.  It clears the canvas,
+     * resets the lastTime variable, initializes functions to create the Enemies,
+     * Hearts, and Stars, and calls the main() function.
+     */
     function initGame() {
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+        // set the lastTime variable that is required for the game loop.
         lastTime = Date.now();
-
         // Add enemies, hearts, and stars to their arrays
         createEnemies();
-        createHearts();
-        createStars();
-
-
+        createHeart();
+        createStar();
         main();
     }
 
     /* This function is called by main (our game loop) and itself calls all
-     * of the functions which may need to update entity's data. Based on how
-     * you implement your collision detection (when two entities occupy the
-     * same space, for instance when your character should die), you may find
-     * the need to add an additional function call here. For now, we've left
-     * it commented out - you may or may not want to implement this
-     * functionality this way (you could just implement collision detection
-     * on the entities themselves within your app.js file).
+     * of the functions needed to update entity's data. 
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
         updateScore(player.score);
         updateHearts(player.hearts);
     }
 
+    /* This function is called by update().  It clears a rectangle to the bottom left
+     * of the canvas and redraws the users score
+     */
     function updateScore(score) {
         ctx.clearRect(0, 602, 250, 30);
         ctx.textAlign = "left";
         ctx.fillText("SCORE: " + score, 0, 620);
     }
 
+    /* This function is called by update().  It clears a rectangle to the bottom right
+     * of the canvas and draws hearts based on how many hearts the user has collected.
+     * We set hearts to stop creation after the user has 8, so we'll prepare for 9 hearts
+     * just in case.
+     */
     function updateHearts(hearts) {
-        ctx.clearRect(canvas.width - 250, 602, 250, 30);
+        ctx.clearRect(canvas.width - 300, 602, 300, 30);
         if (player.hearts > 0) {
             ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 20, 602);
         }
@@ -343,13 +371,22 @@ var Engine = function (global) {
         if (player.hearts > 5) {
             ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 145, 602);
         }
+        if (player.hearts > 6) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 170, 602);
+        }
+        if (player.hearts > 7) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 195, 602);
+        }
+        if (player.hearts > 8) {
+            ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 220, 602);
+        }
     }
 
     /* This is called by the update function  and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
      * player object. These update methods should focus purely on updating
-     * the data/properties related to  the object. Do your drawing in your
+     * the data/properties related to the object. Do your drawing in your
      * render methods.
      */
 
@@ -410,12 +447,12 @@ var Engine = function (global) {
     }
 
     /* This function is called by the render function and is called on each game
-     * tick. It's purpose is to then call the render functions you have defined
+     * tick. It's purpose is to then call the render functions defined
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
         /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
+         * the render function
          */
         allEnemies.forEach(function(enemy) {
             enemy.render();
@@ -451,6 +488,7 @@ var Engine = function (global) {
         'images/Heart.png',
         'images/Star.png'
     ]);
+    // When resources are ready, call the init() function
     Resources.onReady(init);
 
     /* Assign the canvas' context object to the global variable (the window

@@ -89,25 +89,12 @@ var Engine = function (global) {
             ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
         }
 
-        // If a character has already been chosen, run the selectCharacter function
-        if (character === 'images/char-boy.png') {
-            selectCharacter(character, 51, 237);
-        } else if (character === 'images/char-cat-girl.png') {
-            selectCharacter(character, 203.5, 237);
-        } else if (character === 'images/char-horn-girl.png') {
-            selectCharacter(character, 361, 237);
-        } else if (character === 'images/char-pink-girl.png') {
-            selectCharacter(character, 116, 337);
-        } else if (character === 'images/char-princess-girl.png') {
-            selectCharacter(character, 291, 337);
-        }
-
         /* This function runs after a character has been selected.  It re-draws preGame
          * elements, draws a star behind the chosen character, and adds 'Start Game'
          * text below the characters
          */
-        function selectCharacter (selectedCharacter, x, y) {
-            character = selectedCharacter
+        function selectCharacter(selectedCharacter, x, y) {
+            character = selectedCharacter;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
@@ -122,8 +109,18 @@ var Engine = function (global) {
             ctx.fillText('Start Game', canvas.width / 2, 495);
         }
 
-        // Add an event listener to detect mouse movement and send that information to preGameMouseLocation()
-        canvas.addEventListener('mousemove', preGameMouseLocation, false);
+        // If a character has already been chosen, run the selectCharacter function
+        if (character === 'images/char-boy.png') {
+            selectCharacter(character, 51, 237);
+        } else if (character === 'images/char-cat-girl.png') {
+            selectCharacter(character, 203.5, 237);
+        } else if (character === 'images/char-horn-girl.png') {
+            selectCharacter(character, 361, 237);
+        } else if (character === 'images/char-pink-girl.png') {
+            selectCharacter(character, 116, 337);
+        } else if (character === 'images/char-princess-girl.png') {
+            selectCharacter(character, 291, 337);
+        }
 
         // This function determines if the cursor style should be a pointer or not, based on the mouse position.
         // When the user hovers over characters or 'Start Game', it changes the cursor style
@@ -133,27 +130,25 @@ var Engine = function (global) {
             //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
             //console.log(message);
 
-            if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351 ||
-            mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351 ||
-            mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351 ||
-            mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451 ||
-            mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451 ||
-            mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498  && character != null)
-            {
+            if (
+                (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351) ||
+                (mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351) ||
+                (mousePos.x > 378.5 && mousePos.x < 444.5 && mousePos.y > 275 && mousePos.y < 351) ||
+                (mousePos.x > 131.5 && mousePos.x < 201.5 && mousePos.y > 375 && mousePos.y < 451) ||
+                (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) ||
+                (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character !== null)
+            ) {
                 canvas.style.cursor = "pointer";
-            }
-            else {
+            } else {
                 canvas.style.cursor = "default";
             }
         }
 
         /* Determine canvas click location
          * Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
-         * Add an event listener to run onPreGameClick() whenever the user clicks.
          * onPreGameClick() uses the user's mouse location to determine their chosen
-         * character and when to start the game 
+         * character and when to start the game
          */
-        canvas.addEventListener('click', onPreGameClick, false);
         function onPreGameClick(evt) {
             var mousePos = getMousePos(canvas, evt);
 
@@ -170,14 +165,20 @@ var Engine = function (global) {
                 selectCharacter('images/char-pink-girl.png', 116, 337);
             } else if (mousePos.x > 308.5 && mousePos.x < 375.5 && mousePos.y > 375 && mousePos.y < 451) {
                 selectCharacter('images/char-princess-girl.png', 291, 337);
-            } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character != null) {
+            } else if (mousePos.x > 205.5 && mousePos.x < 303.5 && mousePos.y > 481 && mousePos.y < 498 && character !== null) {
                 // If they have chosen a character and they click start game, initialize the game and remove event listener functions
                 initGame();
                 canvas.removeEventListener('mousemove', preGameMouseLocation, false);
                 canvas.removeEventListener('click', onPreGameClick, false);
                 canvas.style.cursor = "default";
             }
-        }    
+        }
+
+        // Add an event listener to run onPreGameClick() whenever the user clicks.
+        canvas.addEventListener('click', onPreGameClick, false);
+
+        // Add an event listener to detect mouse movement and send that information to preGameMouseLocation()
+        canvas.addEventListener('mousemove', preGameMouseLocation, false);
     }
 
     /* This function resets the players hearts, score, position, empties the object arrays,
@@ -228,7 +229,6 @@ var Engine = function (global) {
         ctx.fillText('NEW CHARACTER', canvas.width - 140, 370);
 
         // We put our mouse movement and mouse click event listeners here as well
-        canvas.addEventListener('mousemove', gameOverMouseLocation, false);
 
         function gameOverMouseLocation(evt) {
             var mousePos = getMousePos(canvas, evt);
@@ -236,12 +236,12 @@ var Engine = function (global) {
             //console.log(message);
 
             // Determine if the user is hovering on a button, and change cursor to pointer
-            if (mousePos.x > 93.5 && mousePos.x < 191.5 && mousePos.y > 357 && mousePos.y < 373 ||
-            mousePos.x > 302.5 && mousePos.x < 431.5 && mousePos.y > 357 && mousePos.y < 373)
-            {
+            if (
+                (mousePos.x > 93.5 && mousePos.x < 191.5 && mousePos.y > 357 && mousePos.y < 373) ||
+                (mousePos.x > 302.5 && mousePos.x < 431.5 && mousePos.y > 357 && mousePos.y < 373)
+            ) {
                 canvas.style.cursor = "pointer";
-            }
-            else {
+            } else {
                 canvas.style.cursor = "default";
             }
         }
@@ -250,7 +250,6 @@ var Engine = function (global) {
          * we reset() and run the initGame() function again.  If the user clicks new
          * character, we reset and run the preGame function again.
          */
-        canvas.addEventListener("click", onGameOverClick, false);
         function onGameOverClick(evt) {
             var mousePos = getMousePos(canvas, evt);
             //console.log(mousePos.x + ', ' + mousePos.y);
@@ -268,7 +267,10 @@ var Engine = function (global) {
                 canvas.style.cursor = "default";
                 preGame();
             }
-        }    
+        }
+
+        canvas.addEventListener("click", onGameOverClick, false);
+        canvas.addEventListener('mousemove', gameOverMouseLocation, false);
     }
 
     /* This function serves as the kickoff point for the game loop itself
@@ -329,7 +331,7 @@ var Engine = function (global) {
     }
 
     /* This function is called by main (our game loop) and itself calls all
-     * of the functions needed to update entity's data. 
+     * of the functions needed to update entity's data.
      */
     function update(dt) {
         updateEntities(dt);
@@ -351,7 +353,7 @@ var Engine = function (global) {
      * We set hearts to stop creation after the user has 8, so we'll prepare for 9 hearts
      * just in case.
      */
-    function updateHearts(hearts) {
+    function updateHearts() {
         ctx.clearRect(canvas.width - 300, 602, 300, 30);
         if (player.hearts > 0) {
             ctx.drawImage(Resources.get('images/heart-small.png'), canvas.width - 20, 602);
@@ -391,18 +393,18 @@ var Engine = function (global) {
      */
 
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
+        allEnemies.forEach(function (enemy) {
             enemy.update(dt);
         });
-        allHearts.forEach(function(heart) {
+        allHearts.forEach(function (heart) {
             heart.update(dt);
         });
-        allStars.forEach(function(star) {
+        allStars.forEach(function (star) {
             star.update(dt);
         });
         player.update();
     }
-    
+
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -454,13 +456,13 @@ var Engine = function (global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function
          */
-        allEnemies.forEach(function(enemy) {
+        allEnemies.forEach(function (enemy) {
             enemy.render();
         });
-        allHearts.forEach(function(heart) {
+        allHearts.forEach(function (heart) {
             heart.render();
         });
-        allStars.forEach(function(star) {
+        allStars.forEach(function (star) {
             star.render();
         });
 

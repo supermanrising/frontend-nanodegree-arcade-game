@@ -33,12 +33,13 @@ Enemy.prototype.update = function(dt) {
     this.x = this.x + (this.speed * dt);
 
     // If an enemy goes off canvas, re-calculate speed and loop back to the left
-    for (bug in allEnemies) {
+    var numberOfEnemies = allEnemies.length;
+    for (var i = 0; i < numberOfEnemies; i++) {
         // To avoid overlapping enemies, check to see if
         // the other bug on this bug's y coordinate is at
         // least half way through the screen before
         // looping this bug
-        if (this != allEnemies[bug] && this.y === allEnemies[bug].y && this.x > 600 && allEnemies[bug].x > 300) {
+        if (this != allEnemies[i] && this.y === allEnemies[i].y && this.x > 600 && allEnemies[i].x > 300) {
             // Re-calculate bug speed
             if (halfSpeed === true) {
                 this.speed = Math.floor(Math.random() * (250 - 100 + 1)) + 100;
@@ -144,9 +145,10 @@ playerClass.prototype.update = function() {
     var xVariable;
 
     // check if the player and enemies occupy the same space
-    for (evilBug in allEnemies) {
-        yVariable = allEnemies[evilBug].y - this.y;
-        xVariable = allEnemies[evilBug].x - this.x;
+    var numberOfEnemies = allEnemies.length;
+    for (var i = 0; i < numberOfEnemies; i++) {
+        yVariable = allEnemies[i].y - this.y;
+        xVariable = allEnemies[i].x - this.x;
 
         // if the player and an enemy are in the same spot, reset player and remove 1 heart
         if (yVariable === 8 && xVariable < 50 && xVariable > -50) {
@@ -161,40 +163,43 @@ playerClass.prototype.update = function() {
     var yHeartVar;
     var xHeartVar;
     // check if the player and Hearts occupy the same space
-    for (heart in allHearts) {
-        yHeartVar = allHearts[heart].y - this.y;
-        xHeartVar = allHearts[heart].x - this.x;
+    var numberOfHearts = allHearts.length;
+    for (var i = 0; i < numberOfHearts; i++) {
+        yHeartVar = allHearts[i].y - this.y;
+        xHeartVar = allHearts[i].x - this.x;
 
         // if a collision is detected, give the player 1 heart
         if (yHeartVar === 28 && xHeartVar < 50 && xHeartVar > -50) {
             this.hearts = this.hearts + 1;
             // Move heart outside canvas and stop drawing after it's been used
-            allHearts[heart].active = false;
-            allHearts[heart].speed = 0;
-            allHearts[heart].y = 1000;
+            allHearts[i].active = false;
+            allHearts[i].speed = 0;
+            allHearts[i].y = 1000;
         }
     }
 
     var yStarVar;
     var xStarVar;
     // check if the player and Stars occupy the same space
-    for (star in allStars) {
-        yStarVar = allStars[star].y - this.y;
-        xStarVar = allStars[star].x - this.x;
+    var numberOfStars = allStars.length;
+    for (var i = 0; i < numberOfStars; i++) {
+        yStarVar = allStars[i].y - this.y;
+        xStarVar = allStars[i].x - this.x;
 
         // if a collision is detected, make all enemies run at half speed for 5 seconds
         if (yStarVar === 18 && xStarVar < 50 && xStarVar > -50) {
-            for (evilBug in allEnemies) {
-                allEnemies[evilBug].speed = allEnemies[evilBug].speed / 2;
+            var numberOfEnemies = allEnemies.length;
+            for (var e = 0; e < numberOfEnemies; e++) {
+                allEnemies[e].speed = allEnemies[e].speed / 2;
             }
             // set half speed to true so that enemies will loop at half speed
             halfSpeed = true;
             // set a function to increase speed back to normal in 5 seconds
             fullSpeed();
             // Move star outside canvas and stop drawing after it's been used
-            allStars[star].active = false;
-            allStars[star].speed = 0;
-            allStars[star].y = 1000;
+            allStars[i].active = false;
+            allStars[i].speed = 0;
+            allStars[i].y = 1000;
         }
     }
 };
@@ -274,7 +279,6 @@ function createEnemies () {
         var enemySix = new Enemy(226);
         allEnemies.push(enemySix);
     }, Math.floor(Math.random() * (3500 - 2000 + 1)) + 2000);
-
 }
 
 // Create an array to hold our Hearts

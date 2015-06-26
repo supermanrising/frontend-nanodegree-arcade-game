@@ -85,8 +85,9 @@ var Engine = function (global) {
         ctx.fillText('Choose a Player to Start Hopping', canvas.width / 2, 220);
 
         // Draw each character on the screen
-        for (playerCharacter in playerOptions) {
-            ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
+        var numberOfPlayerOptions = playerOptions.length;
+        for (var i = 0; i < numberOfPlayerOptions; i++) {
+            ctx.drawImage(Resources.get(playerOptions[i].image), playerOptions[i].x, playerOptions[i].y);
         }
 
         /* This function runs after a character has been selected.  It re-draws preGame
@@ -103,8 +104,9 @@ var Engine = function (global) {
 
             ctx.drawImage(Resources.get('images/Star.png'), x, y);
 
-            for (playerCharacter in playerOptions) {
-                ctx.drawImage(Resources.get(playerOptions[playerCharacter].image), playerOptions[playerCharacter].x, playerOptions[playerCharacter].y);
+            var numberOfPlayerOptions = playerOptions.length;
+            for (var i = 0; i < numberOfPlayerOptions; i++) {
+                ctx.drawImage(Resources.get(playerOptions[i].image), playerOptions[i].x, playerOptions[i].y);
             }
             ctx.fillText('Start Game', canvas.width / 2, 495);
         }

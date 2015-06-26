@@ -74,8 +74,6 @@ var Engine = function (global) {
 
     function preGame() {
 
-        reset();
-
         // Set font style
         ctx.font = "18pt VT323";
         ctx.fillStyle = "#000000";
@@ -124,8 +122,8 @@ var Engine = function (global) {
 
         function preGameMouseLocation(evt) {
             var mousePos = getMousePos(canvas, evt);
-            var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-            console.log(message);
+            //var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            //console.log(message);
 
             if (mousePos.x > 68.5 && mousePos.x < 135.5 && mousePos.y > 275 && mousePos.y < 351 ||
             mousePos.x > 221.5 && mousePos.x < 288.5 && mousePos.y > 275 && mousePos.y < 351 ||
@@ -168,21 +166,37 @@ var Engine = function (global) {
     }
 
     function reset() {
-        // Set player's score and hearts back to zero
+        // Set player's score and hearts back to zero and position back to first block
         player.hearts = 3;
         player.score = 0;
-        // Empty the allEnemies and allHearts arrays
+        player.x = 202;
+        player.y = 384;
+        // Empty the allEnemies, allHearts, & allStars arrays
         allEnemies.length = 0;
         allHearts.length = 0;
+        allStars.length = 0;
+        // Clear setTimeouts on Hearts and Enemies in case they have not been created yet
+        clearInterval(pushHearts);
+        clearInterval(pushStars);
+        clearTimeout(createEnemyOne);
+        clearTimeout(createEnemyTwo);
+        clearTimeout(createEnemyThree);
+        clearTimeout(createEnemyFour);
+        clearTimeout(createEnemyFive);
+        clearTimeout(createEnemySix);
     }
 
     function gameOver(playerScore) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(Resources.get('images/pregame-bg.png'), 0, 50);
+
         ctx.font = "60pt VT323";
         ctx.textAlign = "center";
+
         ctx.fillText('GAME OVER', canvas.width / 2, 220);
-        ctx.restore();
+
+        ctx.font = "18pt VT323";
+
         ctx.fillText('Your Score: ' + playerScore, canvas.width / 2, 290);
         ctx.fillText('PLAY AGAIN', 140, 370);
         ctx.fillText('NEW CHARACTER', canvas.width - 140, 370);
@@ -210,16 +224,16 @@ var Engine = function (global) {
             //console.log(mousePos.x + ', ' + mousePos.y);
 
             if (mousePos.x > 93.5 && mousePos.x < 191.5 && mousePos.y > 357 && mousePos.y < 373) {
+                reset();
                 canvas.removeEventListener('mousemove', gameOverMouseLocation, false);
                 canvas.removeEventListener('click', onGameOverClick, false);
                 canvas.style.cursor = "default";
-                console.log('initialize game, same character');
-                //initGame();
+                initGame();
             } else if (mousePos.x > 302.5 && mousePos.x < 431.5 && mousePos.y > 357 && mousePos.y < 373) {
+                reset();
                 canvas.removeEventListener('mousemove', gameOverMouseLocation, false);
                 canvas.removeEventListener('click', onGameOverClick, false);
                 canvas.style.cursor = "default";
-                console.log('initialize pregame, new character');
                 preGame();
             }
         }    
@@ -250,8 +264,10 @@ var Engine = function (global) {
          */
         lastTime = now;
 
-        /* Use the browser's requestAnimationFrame function to call this
-         * function again as soon as the browser is able to draw another frame.
+        /* If the player has hearts remaining, use the browser's requestAnimationFrame
+         * function to call this function again as soon as the browser is able to
+         * draw another frame.  If the player has 0 hearts remaining, call the gameOver
+         * function.
          */
         if (player.hearts > 0) {
             win.requestAnimationFrame(main);
@@ -271,16 +287,16 @@ var Engine = function (global) {
     }
 
     function initGame() {
-        reset();
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         lastTime = Date.now();
 
-        // Add enemies to allEnemies array
+        // Add enemies, hearts, and stars to their arrays
         createEnemies();
-        // Add hearts to allHearts array
         createHearts();
+        createStars();
+
 
         main();
     }
@@ -344,6 +360,9 @@ var Engine = function (global) {
         allHearts.forEach(function(heart) {
             heart.update(dt);
         });
+        allStars.forEach(function(star) {
+            star.update(dt);
+        });
         player.update();
     }
     
@@ -404,6 +423,9 @@ var Engine = function (global) {
         allHearts.forEach(function(heart) {
             heart.render();
         });
+        allStars.forEach(function(star) {
+            star.render();
+        });
 
         player.render(character);
     }
@@ -426,7 +448,8 @@ var Engine = function (global) {
         'images/title.png',
         'images/Star.png',
         'images/heart-small.png',
-        'images/Heart.png'
+        'images/Heart.png',
+        'images/Star.png'
     ]);
     Resources.onReady(init);
 

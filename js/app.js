@@ -11,7 +11,11 @@ var Enemy = function(y) {
     this.y = y;
     // Generate a random number within a range
     // citation: http://stackoverflow.com/questions/1527803/generating-random-numbers-in-javascript-in-a-specific-range
-    this.speed = Math.floor(Math.random() * (500 - 150 + 1)) + 150;
+    if (halfSpeed === true) {
+        this.speed = Math.floor(Math.random() * (250 - 100 + 1)) + 100;
+    } else {
+        this.speed = Math.floor(Math.random() * (500 - 200 + 1)) + 200;
+    }
 }
 
 // Update the enemy's position, required method for game
@@ -33,9 +37,14 @@ Enemy.prototype.update = function(dt) {
         // looping this bug
         if (this != allEnemies[bug] && this.y === allEnemies[bug].y && this.x > 600 && allEnemies[bug].x > 300) {
             // Re-calculate bug speed
-            this.speed = Math.floor(Math.random() * (500 - 150 + 1)) + 150;
+            console.log(halfSpeed);
+            if (halfSpeed === true) {
+                this.speed = Math.floor(Math.random() * (250 - 100 + 1)) + 100;
+            } else {
+                this.speed = Math.floor(Math.random() * (500 - 200 + 1)) + 200;
+            }
             // place bug to the left of canvas
-            this.x = -300;
+            this.x = -101;
         }
     }
     
@@ -55,19 +64,33 @@ Enemy.prototype.render = function() {
 
 var Heart = function(y) {
     this.sprite = 'images/Heart.png';
-    this.x = -100;
+    this.x = -101;
     this.y = y;
     this.speed = Math.floor(Math.random() * (200 - 100 + 1)) + 100;
+    this.active = true;
 }
 Heart.prototype.update = function(dt) {
     this.x = this.x + (this.speed * dt);
-    if (this.x > 3000) {
-        this.x = -300;
+    // Set heart to inactive when it exits the canvas view
+    if (this.x > 600) {
+        this.active = false;
+        this.speed = 0;
     }
 }
 Heart.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    // Only draw each heart if it's within the canvas view, just to save load time
+    if (this.active === true) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
 }
+
+// Create new star variable as a Pseudoclassical Subclass of Heart
+var Star = function(y) {
+    Heart.call(this, y);
+    this.sprite = 'images/Star.png'
+}
+Star.prototype = Object.create(Heart.prototype);
+Star.prototype.constructor = Star;
 
 // Now write your own player class
 // This class requires an update(), render() and
@@ -79,6 +102,10 @@ var playerClass = function() {
     this.score = 0;
     this.hearts = 3;
 }
+// Set endStarPower as a global variable so we can clear the timeout on reset
+var endStarPower;
+// Set halfSpeed as a global variable so we can slow down new enemies during Star Power
+var halfSpeed = false;
 playerClass.prototype.update = function() {
     for (evilBug in allEnemies) {
         var yVariable = allEnemies[evilBug].y - this.y;
@@ -101,8 +128,34 @@ playerClass.prototype.update = function() {
 
         if (yHeartVar === 28 && xHeartVar < 50 && xHeartVar > -50) {
             this.hearts = this.hearts + 1;
-            // Move heart outside canvas after it's been used
+            // Move heart outside canvas and stop drawing after it's been used
+            allHearts[heart].active = false;
+            allHearts[heart].speed = 0;
             allHearts[heart].y = 1000;
+        }
+    }
+
+    for (star in allStars) {
+        var yStarVar = allStars[star].y - this.y;
+        var xStarVar = allStars[star].x - this.x;
+
+        //console.log(xStarVar + ', ' + yStarVar);
+
+        if (yStarVar === 18 && xStarVar < 50 && xStarVar > -50) {
+            for (evilBug in allEnemies) {
+                allEnemies[evilBug].speed = allEnemies[evilBug].speed * .5;
+            }
+            halfSpeed = true;
+            speedBackUp = setTimeout(function() {
+                for (evilBug in allEnemies) {
+                    allEnemies[evilBug].speed = allEnemies[evilBug].speed * 2;
+                }
+                halfSpeed = false;
+            }, 5000)
+            // Move star outside canvas and stop drawing after it's been used
+            allStars[star].active = false;
+            allStars[star].speed = 0;
+            allStars[star].y = 1000;
         }
     }
 }
@@ -140,56 +193,68 @@ playerClass.prototype.handleInput = function(keycode) {
 // Place the player object in a variable called player
 var allEnemies = [];
 
-function createEnemies () {
+var createEnemyOne;
+var createEnemyTwo;
+var createEnemyThree;
+var createEnemyFour;
+var createEnemyFive;
+var createEnemySix;
 
-    var enemyOne = new Enemy(60);
-    setTimeout(function() {
+function createEnemies () {
+    createEnemyOne = setTimeout(function() {
+        var enemyOne = new Enemy(60);
         allEnemies.push(enemyOne);
     }, Math.floor(Math.random() * (2000 - 100 + 1)) + 100)
 
-    var enemyTwo = new Enemy(60);
-    setTimeout(function() {
+    createEnemyTwo = setTimeout(function() {
+        var enemyTwo = new Enemy(60);
         allEnemies.push(enemyTwo);
     }, Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000)
 
-    var enemyThree = new Enemy(143);
-    setTimeout(function() {
+    createEnemyThree = setTimeout(function() {
+        var enemyThree = new Enemy(143);
         allEnemies.push(enemyThree);
     }, Math.floor(Math.random() * (2000 - 100 + 1)) + 100)
 
-    var enemyFour = new Enemy(143);
-    setTimeout(function() {
+    createEnemyFour = setTimeout(function() {
+        var enemyFour = new Enemy(143);
         allEnemies.push(enemyFour);
     }, Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000)
-
-    var enemyFive = new Enemy(226);
-    setTimeout(function() {
+    createEnemyFive = setTimeout(function() {
+        var enemyFive = new Enemy(226);
         allEnemies.push(enemyFive);
     }, Math.floor(Math.random() * (2000 - 100 + 1)) + 100)
 
-    var enemySix = new Enemy(226);
-    setTimeout(function() {
+    createEnemySix = setTimeout(function() {
+        var enemySix = new Enemy(226);
         allEnemies.push(enemySix);
     }, Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000)
+
 }
 
 var allHearts = [];
+var heartY = [80, 163, 246];
 
+/* Create a setInterval Function for creating a new heart every 10 - 45 seconds
+ * Do this as a variable so we can clear the setInterval on reset()
+ * For the Y position, we randomly choose a number from the heartY array
+ * Citation: http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
+ */
 function createHearts () {
-    var heartOne = new Heart(80);
-    setTimeout(function() {
-        allHearts.push(heartOne);
-    }, Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000)
+    window.pushHearts = setInterval(function() {
+        var heart = new Heart(heartY[Math.floor(Math.random() * heartY.length)]);
+        allHearts.push(heart);
+    }, Math.floor(Math.random() * (45000 - 10000 + 1)) + 10000)
+}
 
-    var heartTwo = new Heart(163);
-    setTimeout(function() {
-        allHearts.push(heartTwo);
-    }, Math.floor(Math.random() * (25000 - 15000 + 1)) + 15000)
-
-    var heartThree = new Heart(246);
-    setTimeout(function() {
-        allHearts.push(heartThree);
-    }, Math.floor(Math.random() * (35000 - 25000 + 1)) + 25000)
+var allStars = [];
+var StarY = [70, 153, 236];
+function createStars () {
+    // Same as createHearts
+    window.pushStars = setInterval(function() {
+        var star = new Star(StarY[Math.floor(Math.random() * StarY.length)]);
+        allStars.push(star);
+    }, Math.floor(Math.random() * (60000 - 30000 + 1)) + 30000)
 }
 
 var player = new playerClass();

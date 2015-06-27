@@ -38,7 +38,7 @@ Enemy.prototype.update = function(dt) {
         // To spread out our enemies, check to see if the other bug on this bug's
         // y coordinate is at least half way through the screen before looping this bug
         if (this != allEnemies[i] && this.y === allEnemies[i].y && this.x > 600 && allEnemies[i].x > 300) {
-            // Re-calculate bug speed
+            // Re-calculate bug speed according to whether star power is currently active
             if (halfSpeed === true) {
                 this.speed = Math.floor(Math.random() * (250 - 100 + 1)) + 100;
             } else {
@@ -116,7 +116,7 @@ Enemy.prototype.create = function() {
     for (var i = 0; i < enemiesToCreate; i++) {
         enemiesSetTimeout(i);
     }
-}
+};
 
 // Set halfSpeed as a global variable, to be modified during star power
 var halfSpeed = false;
@@ -146,13 +146,13 @@ Heart.prototype.update = function(dt) {
      * hearts, and partly because it makes if more difficult for the advanced player.
      */
     if (heartsBeingCreated === true && player.hearts >= 8) {
-        clearTimeout(pushHearts);
+        clearTimeout(window.pushHearts);
         heartsBeingCreated = false;
     }
     // If the user goes below 8 hearts and hearts aren't being created, restarts the creatHeart loop
     if (heartsBeingCreated === false && player.hearts < 8) {
         heartsBeingCreated = true;
-        createHeart();
+        Heart.prototype.create();
     }
 };
 
@@ -182,7 +182,7 @@ Heart.prototype.create = function() {
         allHearts.push(heart);
         Heart.prototype.create();
     }, randomHeartInterval);
-}
+};
 
 var heartsBeingCreated = true;
 
@@ -221,7 +221,7 @@ Star.prototype.create = function() {
         allStars.push(star);
         Star.prototype.create();
     }, randomStarInterval);
-}
+};
 
 // Player class
 var playerClass = function() {
@@ -260,17 +260,17 @@ playerClass.prototype.update = function() {
 
     // check if the player and Hearts occupy the same space
     var numberOfHearts = allHearts.length;
-    for (var i = 0; i < numberOfHearts; i++) {
-        yHeartVar = allHearts[i].y - this.y;
-        xHeartVar = allHearts[i].x - this.x;
+    for (var h = 0; h < numberOfHearts; h++) {
+        yHeartVar = allHearts[h].y - this.y;
+        xHeartVar = allHearts[h].x - this.x;
 
         // if a collision is detected, give the player 1 heart
         if (yHeartVar === 28 && xHeartVar < 50 && xHeartVar > -50) {
             this.hearts = this.hearts + 1;
             // Move heart outside canvas and stop drawing after it's been used
-            allHearts[i].active = false;
-            allHearts[i].speed = 0;
-            allHearts[i].y = 1000;
+            allHearts[h].active = false;
+            allHearts[h].speed = 0;
+            allHearts[h].y = 1000;
         }
     }
 
@@ -279,9 +279,9 @@ playerClass.prototype.update = function() {
 
     // check if the player and Stars occupy the same space
     var numberOfStars = allStars.length;
-    for (var i = 0; i < numberOfStars; i++) {
-        yStarVar = allStars[i].y - this.y;
-        xStarVar = allStars[i].x - this.x;
+    for (var s = 0; s < numberOfStars; s++) {
+        yStarVar = allStars[s].y - this.y;
+        xStarVar = allStars[s].x - this.x;
 
         // if a collision is detected, make all enemies run at half speed for 5 seconds
         if (yStarVar === 18 && xStarVar < 50 && xStarVar > -50) {
@@ -292,11 +292,11 @@ playerClass.prototype.update = function() {
             // set half speed to true so that enemies will loop at half speed
             halfSpeed = true;
             // set a function to increase speed back to normal in 5 seconds
-            setTimeout("Enemy.prototype.fullSpeed();",5000);
+            setTimeout(Enemy.prototype.fullSpeed,5000);
             // Move star outside canvas and stop drawing after it's been used
-            allStars[i].active = false;
-            allStars[i].speed = 0;
-            allStars[i].y = 1000;
+            allStars[s].active = false;
+            allStars[s].speed = 0;
+            allStars[s].y = 1000;
         }
     }
 };

@@ -1,6 +1,8 @@
 frontend-nanodegree-arcade-game
 ===============================
 
+To begin, open index.html in your internet browser.
+
 Select your character and click 'Start Game' to begin playing.
 
 Avoid enemies and get to the water across the road for 1 point.

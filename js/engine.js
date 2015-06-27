@@ -146,9 +146,7 @@ var Engine = function (global) {
             }
         }
 
-        /* Determine canvas click location
-         * Citation: http://www.webdeveloper.com/forum/showthread.php?240982-Clickable-image-object-on-canvas-tag
-         * onPreGameClick() uses the user's mouse location to determine their chosen
+        /* onPreGameClick() uses the user's mouse location to determine their chosen
          * character and when to start the game
          */
         function onPreGameClick(evt) {
@@ -200,17 +198,11 @@ var Engine = function (global) {
         // Clear setTimeouts on Hearts, Stars, and Enemies.
         clearTimeout(pushHearts);
         clearTimeout(pushStars);
-        clearTimeout(createEnemyOne);
-        clearTimeout(createEnemyTwo);
-        clearTimeout(createEnemyThree);
-        clearTimeout(createEnemyFour);
-        clearTimeout(createEnemyFive);
-        clearTimeout(createEnemySix);
-        clearTimeout(endStarPower);
+        clearTimeout(createEnemy);
         halfSpeed = false;
     }
 
-    /* This function is called by main() if the player has lost all hearts (line 295).
+    /* This function is called by main() if the player has lost all hearts.
      * It clears the canvas, and draws 'Game Over' with the users score information.
      * It also give the options to play again with the same character or choose a new
      * character.
@@ -326,9 +318,9 @@ var Engine = function (global) {
         // set the lastTime variable that is required for the game loop.
         lastTime = Date.now();
         // Add enemies, hearts, and stars to their arrays
-        createEnemies();
-        createHeart();
-        createStar();
+        Enemy.prototype.create();
+        Heart.prototype.create();
+        Star.prototype.create();
         main();
     }
 
